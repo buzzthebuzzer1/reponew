@@ -1,0 +1,70 @@
+import java.util.Scanner;
+
+public class FIFO {
+    static int n, nf;
+    static int[] in = new int[100];
+    static int[] p = new int[50];
+    static int hit = 0;
+    static int pgfaultcnt = 0;
+
+    static void getData(Scanner sc) {
+        System.out.print("\nEnter length of page reference sequence: ");
+        n = sc.nextInt();
+        System.out.print("\nEnter the page reference sequence: ");
+        for (int i = 0; i < n; i++)
+            in[i] = sc.nextInt();
+        System.out.print("\nEnter number of frames: ");
+        nf = sc.nextInt();
+    }
+
+    static void initialize() {
+        pgfaultcnt = 0;
+        for (int i = 0; i < nf; i++)
+            p[i] = -1;
+    }
+
+    static boolean isHit(int data) {
+        hit = 0;
+        for (int j = 0; j < nf; j++) {
+            if (p[j] == data) {
+                hit = 1;
+                break;
+            }
+        }
+        return hit == 1;
+    }
+
+    static void dispPages() {
+        for (int k = 0; k < nf; k++) {
+            if (p[k] != -1)
+                System.out.print(" " + p[k]);
+        }
+    }
+
+    static void dispPgFaultCnt() {
+        System.out.println("\nTotal no of page faults: " + pgfaultcnt);
+    }
+
+    public static void fifo() {
+        initialize();
+        int pointer = 0;
+        for (int i = 0; i < n; i++) {
+            System.out.print("\nFor " + in[i] + " :");
+            if (!isHit(in[i])) {
+                p[pointer] = in[i];
+                pointer = (pointer + 1) % nf;
+                pgfaultcnt++;
+                dispPages();
+            } else
+                System.out.print(" No page fault");
+        }
+        dispPgFaultCnt();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        getData(sc);
+        fifo();
+        sc.close();
+    }
+}
