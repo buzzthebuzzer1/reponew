@@ -1,0 +1,89 @@
+import java.util.Scanner;
+
+public class LRU {
+    static int n, nf;
+    static int[] in = new int[100];
+    static int[] p = new int[50];
+    static int hit = 0;
+    static int pgfaultcnt = 0;
+
+    static void getData(Scanner sc) {
+        System.out.print("\nEnter length of page reference sequence: ");
+        n = sc.nextInt();
+        System.out.print("\nEnter the page reference sequence: ");
+        for (int i = 0; i < n; i++)
+            in[i] = sc.nextInt();
+        System.out.print("\nEnter number of frames: ");
+        nf = sc.nextInt();
+    }
+
+    static void initialize() {
+        pgfaultcnt = 0;
+        for (int i = 0; i < nf; i++)
+            p[i] = -1;
+    }
+
+    static boolean isHit(int data) {
+        hit = 0;
+        for (int j = 0; j < nf; j++) {
+            if (p[j] == data) {
+                hit = 1;
+                break;
+            }
+        }
+        return hit == 1;
+    }
+
+    static void dispPages() {
+        for (int k = 0; k < nf; k++) {
+            if (p[k] != -1)
+                System.out.print(" " + p[k]);
+        }
+    }
+
+    static void dispPgFaultCnt() {
+        System.out.println("\nTotal no of page faults: " + pgfaultcnt);
+    }
+
+    public static void lru() {
+        initialize();
+        int[] least = new int[50];
+        for (int i = 0; i < n; i++) {
+            System.out.print("\nFor " + in[i] + " :");
+            if (!isHit(in[i])) {
+                for (int j = 0; j < nf; j++) {
+                    int pg = p[j];
+                    int found = 0;
+                    for (int k = i - 1; k >= 0; k--) {
+                        if (pg == in[k]) {
+                            least[j] = k;
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (found == 0)
+                        least[j] = -9999;
+                }
+                int min = 9999, repindex = -1;
+                for (int j = 0; j < nf; j++) {
+                    if (least[j] < min) {
+                        min = least[j];
+                        repindex = j;
+                    }
+                }
+                p[repindex] = in[i];
+                pgfaultcnt++;
+                dispPages();
+            } else
+                System.out.print(" No page fault");
+        }
+        dispPgFaultCnt();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        getData(sc);
+        lru();
+        sc.close();
+    }
+}
