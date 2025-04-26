@@ -1,0 +1,61 @@
+import java.util.Scanner;
+
+public class RR {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int n, quantum;
+        int[] bt = new int[100];
+        int[] rt = new int[100];
+        int[] wt = new int[100];
+        int[] tat = new int[100];
+        int total_wt = 0, total_tat = 0;
+
+        System.out.print("Enter number of processes: ");
+        n = input.nextInt();
+
+        System.out.println("Enter Burst Times:");
+        for (int i = 0; i < n; i++) {
+            System.out.print("P" + (i + 1) + ": ");
+            bt[i] = input.nextInt();
+            rt[i] = bt[i];
+        }
+
+        System.out.print("Enter Time Quantum: ");
+        quantum = input.nextInt();
+
+        int t = 0;
+
+        while (true) {
+            boolean done = true;
+
+            for (int i = 0; i < n; i++) {
+                if (rt[i] > 0) {
+                    done = false;
+
+                    if (rt[i] > quantum) {
+                        t += quantum;
+                        rt[i] -= quantum;
+                    } else {
+                        t += rt[i];
+                        wt[i] = t - bt[i];
+                        rt[i] = 0;
+                    }
+                }
+            }
+
+            if (done)
+                break;
+        }
+
+        System.out.println("\nP\tBT\tWT\tTAT");
+        for (int i = 0; i < n; i++) {
+            tat[i] = bt[i] + wt[i];
+            total_wt += wt[i];
+            total_tat += tat[i];
+            System.out.println("P" + (i + 1) + "\t" + bt[i] + "\t" + wt[i] + "\t" + tat[i]);
+        }
+
+        System.out.println("Average Waiting Time = " + (float)total_wt / n);
+        System.out.println("Average Turnaround Time = " + (float)total_tat / n);
+    }
+}
