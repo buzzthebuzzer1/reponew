@@ -1,0 +1,56 @@
+import java.util.concurrent.Semaphore;
+
+public class ProducerConsumerExample {
+    static Semaphore empty = new Semaphore(5); // buffer size = 5
+    static Semaphore full = new Semaphore(0);
+    static Semaphore mutex = new Semaphore(1);
+    static int item = 0;
+
+    static class Producer extends Thread {
+        public void run() {
+            try {
+                for (int i = 0; i < 5; i++) {
+                    empty.acquire();
+                    mutex.acquire();
+
+                    item++;
+                    System.out.println("Producer produced item: " + item);
+                    Thread.sleep(500);
+
+                    mutex.release();
+                    full.release();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static class Consumer extends Thread {
+        public void run() {
+            try {
+                for (int i = 0; i < 5; i++) {
+                    full.acquire();
+                    mutex.acquire();
+
+                    System.out.println("Consumer consumed item: " + item);
+                    item--;
+                    Thread.sleep(500);
+
+                    mutex.release();
+                    empty.release();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Producer p = new Producer();
+        Consumer c = new Consumer();
+
+        p.start();
+        c.start();
+    }
+}
