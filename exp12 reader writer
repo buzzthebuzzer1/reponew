@@ -1,0 +1,67 @@
+import java.util.concurrent.Semaphore;
+
+public class ReaderWriterExample {
+    static Semaphore mutex = new Semaphore(1);
+    static Semaphore wrt = new Semaphore(1);
+    static int readCount = 0;
+    static int data = 0; // shared data
+
+    static class Reader extends Thread {
+        public void run() {
+            try {
+                mutex.acquire();
+                readCount++;
+                if (readCount == 1) {
+                    wrt.acquire();
+                }
+                mutex.release();
+
+                System.out.println(Thread.currentThread().getName() + " is reading data: " + data);
+                Thread.sleep(500);
+
+                mutex.acquire();
+                readCount--;
+                if (readCount == 0) {
+                    wrt.release();
+                }
+                mutex.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static class Writer extends Thread {
+        public void run() {
+            try {
+                wrt.acquire();
+                data = data + 1;
+                System.out.println(Thread.currentThread().getName() + " is writing data: " + data);
+                Thread.sleep(500);
+                wrt.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Reader r1 = new Reader();
+        Reader r2 = new Reader();
+        Writer w1 = new Writer();
+        Reader r3 = new Reader();
+        Writer w2 = new Writer();
+
+        r1.setName("Reader-1");
+        r2.setName("Reader-2");
+        w1.setName("Writer-1");
+        r3.setName("Reader-3");
+        w2.setName("Writer-2");
+
+        r1.start();
+        r2.start();
+        w1.start();
+        r3.start();
+        w2.start();
+    }
+}
