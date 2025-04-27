@@ -1,153 +1,170 @@
-import java.util.Scanner;
+import java.util.*;
 
 public class PageReplacement {
+    static int[] pages;
     static int n, nf;
-    static int[] in = new int[100];
-    static int[] p = new int[50];
-    static int hit = 0;
-    static int pgfaultcnt = 0;
+    static int[] frames;
 
-    static void getData(Scanner sc) {
+    static Scanner sc = new Scanner(System.in);
+
+    public static void getData() {
         System.out.print("\nEnter length of page reference sequence: ");
         n = sc.nextInt();
-        System.out.print("\nEnter the page reference sequence: ");
-        for (int i = 0; i < n; i++)
-            in[i] = sc.nextInt();
-        System.out.print("\nEnter number of frames: ");
+        pages = new int[n];
+        System.out.println("Enter the page reference sequence:");
+        for (int i = 0; i < n; i++) {
+            pages[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter number of frames: ");
         nf = sc.nextInt();
+        frames = new int[nf];
     }
 
-    static void initialize() {
-        pgfaultcnt = 0;
-        for (int i = 0; i < nf; i++)
-            p[i] = -1;
+    public static void initialize() {
+        Arrays.fill(frames, -1);
     }
 
-    static boolean isHit(int data) {
-        hit = 0;
-        for (int j = 0; j < nf; j++) {
-            if (p[j] == data) {
-                hit = 1;
-                break;
+    public static boolean isHit(int data) {
+        for (int value : frames) {
+            if (value == data)
+                return true;
+        }
+        return false;
+    }
+
+    public static void displayFrames() {
+        for (int frame : frames) {
+            if (frame != -1)
+                System.out.print(" " + frame);
+        }
+        System.out.println();
+    }
+
+    public static void fifo() {
+        initialize();
+        int pageFaults = 0;
+        int pointer = 0;
+
+        for (int page : pages) {
+            System.out.print("For " + page + ": ");
+            if (!isHit(page)) {
+                frames[pointer] = page;
+                pointer = (pointer + 1) % nf;
+                pageFaults++;
+                displayFrames();
+            } else {
+                System.out.println("No page fault");
             }
         }
-        return hit == 1;
+        System.out.println("Total page faults: " + pageFaults);
     }
 
-    static void dispPages() {
-        for (int k = 0; k < nf; k++) {
-            if (p[k] != -1)
-                System.out.print(" " + p[k]);
-        }
-    }
-
-    static void dispPgFaultCnt() {
-        System.out.println("\nTotal no of page faults: " + pgfaultcnt);
-    }
-
-    static void fifo() {
+    public static void optimal() {
         initialize();
-        int pointer = 0;
-        for (int i = 0; i < n; i++) {
-            System.out.print("\nFor " + in[i] + " :");
-            if (!isHit(in[i])) {
-                p[pointer] = in[i];
-                pointer = (pointer + 1) % nf;
-                pgfaultcnt++;
-                dispPages();
-            } else
-                System.out.print(" No page fault");
-        }
-        dispPgFaultCnt();
-    }
+        int pageFaults = 0;
 
-    static void optimal() {
-        initialize();
-        int[] near = new int[50];
         for (int i = 0; i < n; i++) {
-            System.out.print("\nFor " + in[i] + " :");
-            if (!isHit(in[i])) {
+            System.out.print("For " + pages[i] + ": ");
+            if (!isHit(pages[i])) {
+                int[] nextUse = new int[nf];
+                Arrays.fill(nextUse, Integer.MAX_VALUE);
+
                 for (int j = 0; j < nf; j++) {
-                    int pg = p[j];
-                    int found = 0;
                     for (int k = i + 1; k < n; k++) {
-                        if (pg == in[k]) {
-                            near[j] = k;
-                            found = 1;
+                        if (frames[j] == pages[k]) {
+                            nextUse[j] = k;
                             break;
                         }
                     }
-                    if (found == 0)
-                        near[j] = 9999;
                 }
-                int max = -1, repindex = -1;
-                for (int j = 0; j < nf; j++) {
-                    if (near[j] > max) {
-                        max = near[j];
-                        repindex = j;
+
+                int indexToReplace = 0;
+                int farthest = nextUse[0];
+                for (int j = 1; j < nf; j++) {
+                    if (nextUse[j] > farthest) {
+                        farthest = nextUse[j];
+                        indexToReplace = j;
                     }
                 }
-                p[repindex] = in[i];
-                pgfaultcnt++;
-                dispPages();
-            } else
-                System.out.print(" No page fault");
+
+                frames[indexToReplace] = pages[i];
+                pageFaults++;
+                displayFrames();
+            } else {
+                System.out.println("No page fault");
+            }
         }
-        dispPgFaultCnt();
+        System.out.println("Total page faults: " + pageFaults);
     }
 
-    static void lru() {
+    public static void lru() {
         initialize();
-        int[] least = new int[50];
+        int pageFaults = 0;
+
         for (int i = 0; i < n; i++) {
-            System.out.print("\nFor " + in[i] + " :");
-            if (!isHit(in[i])) {
+            System.out.print("For " + pages[i] + ": ");
+            if (!isHit(pages[i])) {
+                int[] lastUsed = new int[nf];
+                Arrays.fill(lastUsed, -1);
+
                 for (int j = 0; j < nf; j++) {
-                    int pg = p[j];
-                    int found = 0;
                     for (int k = i - 1; k >= 0; k--) {
-                        if (pg == in[k]) {
-                            least[j] = k;
-                            found = 1;
+                        if (frames[j] == pages[k]) {
+                            lastUsed[j] = k;
                             break;
                         }
                     }
-                    if (found == 0)
-                        least[j] = -9999;
                 }
-                int min = 9999, repindex = -1;
-                for (int j = 0; j < nf; j++) {
-                    if (least[j] < min) {
-                        min = least[j];
-                        repindex = j;
+
+                int lruIndex = 0;
+                int min = lastUsed[0];
+                for (int j = 1; j < nf; j++) {
+                    if (lastUsed[j] < min) {
+                        min = lastUsed[j];
+                        lruIndex = j;
                     }
                 }
-                p[repindex] = in[i];
-                pgfaultcnt++;
-                dispPages();
-            } else
-                System.out.print(" No page fault");
+
+                frames[lruIndex] = pages[i];
+                pageFaults++;
+                displayFrames();
+            } else {
+                System.out.println("No page fault");
+            }
         }
-        dispPgFaultCnt();
+        System.out.println("Total page faults: " + pageFaults);
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        getData(sc);
         while (true) {
-            System.out.println("\n\nPage Replacement Algorithms");
-            System.out.println("1. FIFO\n2. OPTIMAL\n3. LRU\n4. Exit\nEnter your choice: ");
+            System.out.println("\nPage Replacement Algorithms");
+            System.out.println("1. Enter Data");
+            System.out.println("2. FIFO");
+            System.out.println("3. Optimal");
+            System.out.println("4. LRU");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
+
             switch (choice) {
-                case 1: fifo();
-                        break;
-                case 2: optimal();
-                        break;
-                case 3: lru();
-                        break;
-                case 4: sc.close();
-                        return;
-                default: System.out.println("\nInvalid choice!");
+                case 1:
+                    getData();
+                    break;
+                case 2:
+                    fifo();
+                    break;
+                case 3:
+                    optimal();
+                    break;
+                case 4:
+                    lru();
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice!");
             }
         }
     }
