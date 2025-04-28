@@ -1,0 +1,83 @@
+arithmetic.sh
+
+echo "Enter two numbers to add"
+read a b
+echo "The addition of two numbers is $((a + b))"
+
+echo "Enter two numbers to subtract"
+read a b
+echo "The subtraction of two numbers is $((a - b))"
+
+echo "Enter two numbers to multiply"
+read a b
+echo "The multiplication of two numbers is $((a * b))"
+
+echo "Enter two numbers to divide"
+read a b
+echo "The division of two numbers is $((a / b))"
+
+
+
+
+
+simple_interest.sh
+
+#!/bin/bash
+
+echo "Enter the principal value"
+read p
+echo "Enter the rate of interest"
+read r
+echo "Enter the time period"
+read n
+
+i=`expr $p \* $n \* $r / 100`
+echo "The simple interest is $i"
+
+
+
+
+
+largest num
+
+#!/bin/bash
+
+echo "Enter the first number"
+read num1
+
+echo "Enter the second number"
+read num2
+
+echo "Enter the third number"
+read num3
+
+if [ $num1 -gt $num2 ] && [ $num1 -gt $num3 ]
+then
+    echo "The greatest number is $num1"
+elif [ $num2 -gt $num1 ] && [ $num2 -gt $num3 ]
+then
+    echo "The greatest number is $num2"
+else
+    echo "The greatest number is $num3"
+fi
+
+
+
+
+leap year or not
+
+#!/bin/bash
+
+echo "Enter a year"
+read y
+
+year=$y
+y=$(( y % 4 ))
+
+if [ $y -eq 0 ]
+then
+    echo "$year is a leap year"
+else
+    echo "$year is not a leap year"
+fi
+
