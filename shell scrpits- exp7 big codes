@@ -1,0 +1,297 @@
+to run on ubuntu terminal:
+
+chmod +x scriptname.sh
+./scriptname.sh
+
+
+
+
+simple interest - 
+
+echo -n "Enter the principal value: "
+read p
+echo -n "Enter rate of interest: "
+read r
+echo -n "Enter time period (in years): "
+read n
+
+i=$((p * n * r / 100))
+
+echo "The simple interest is: $i"
+
+
+
+
+leap year 
+
+echo -n "Enter a year: "
+read y
+year=$y
+y=$(( y % 4 ))
+if [ $y -eq 0 ]
+then
+    echo "$year is a leap year"
+else
+    echo "$year is not a leap year"
+fi
+
+
+
+
+
+
+
+
+search element - 
+
+echo "Enter elements"
+read ele
+
+echo "Enter item to be searched"
+read item
+
+flag=0
+for e in $ele
+do
+    if [ "$e" == "$item" ]
+    then
+        flag=1
+        break
+    fi
+done
+
+if [ $flag -eq 1 ]
+then
+    echo "Item found"
+else
+    echo "Item not found"
+fi
+
+
+
+
+
+
+employee pay calculation - 
+
+echo "Enter the basic salary:"
+read sal
+
+if [ $sal -lt 1500 ]
+then
+    gross=$((sal + (sal / 100) * 10 + (sal / 100) * 90))
+    echo "The gross salary: $gross"
+fi
+
+if [ $sal -ge 1500 ]
+then
+    gross=$(((sal + 500) + (sal / 100) * 98))
+    echo "The gross salary: $gross"
+fi
+
+
+
+
+
+
+
+
+check if file exists or not, then create
+
+echo "Enter the file name"
+read file
+
+if [ -e "$file.txt" ]
+then
+    echo "File exists"
+else
+    echo "File does not exist"
+    echo "Creating file"
+    cat > "$file.txt"
+fi
+
+
+
+
+
+
+
+
+calculator using switch
+
+echo "1. Addition"
+echo "2. Subtraction"
+echo "3. Multiplication"
+echo "4. Division"
+
+echo -n "Enter the option: "
+read option
+
+echo "Enter two numbers"
+read a b
+
+case $option in
+    1)
+        c=$((a + b))
+        echo "$a + $b = $c"
+        ;;
+    2)
+        c=$((a - b))
+        echo "$a - $b = $c"
+        ;;
+    3)
+        c=$((a * b))
+        echo "$a * $b = $c"
+        ;;
+    4)
+        c=$((a / b))
+        echo "$a / $b = $c"
+        ;;
+    *)
+        echo "Invalid Option"
+        ;;
+esac
+
+
+
+
+
+
+
+
+star pattern 
+
+echo "Enter number of rows:"
+read rows
+
+for ((i=0; i<rows; i++))
+do
+    for ((j=i; j<=rows; j++))
+    do
+        echo -n " "
+    done
+    for ((k=0; k<=i; k++))
+    do
+        echo -n "* "
+    done
+    echo
+done
+
+
+
+
+
+
+directory operations 
+
+echo "Current working directory is:"
+pwd
+
+echo "Content of current directory:"
+ls
+
+echo "Creating another directory:"
+mkdir New_Folder
+ls
+
+cd New_Folder
+echo "Creating a file in New_Folder:"
+touch new_file.txt
+gedit new_file.txt  # (or use nano/vi if gedit not available)
+
+echo "Content of the file is:"
+cat new_file.txt
+
+echo "Copying the newly created file to /home directory"
+cp new_file.txt ~/
+
+
+
+
+
+
+
+
+Menu-driven program (Even/Odd, Prime, Palindrome)  
+
+function prime {
+    echo -n "Enter the number: "
+    read a
+    i=2
+    z=0
+    while [ $i -lt $a ]
+    do
+        s=$((a % i))
+        if [ $s -eq $z ]
+        then
+            echo "Not a Prime Number"
+            return
+        else
+            i=$((i + 1))
+        fi
+    done
+    echo "Prime number"
+}
+
+function oddeven {
+    echo -n "Enter a Number: "
+    read n
+    rem=$((n % 2))
+    if [ $rem -eq 0 ]
+    then
+        echo "Number is even"
+    else
+        echo "Number is odd"
+    fi
+}
+
+function palindrome {
+    echo -n "Enter number: "
+    read n
+    sd=0
+    rev=""
+    on=$n
+
+    while [ $n -gt 0 ]
+    do
+        sd=$((n % 10))
+        n=$((n / 10))
+        rev=$(echo ${rev}${sd})
+    done
+
+    if [ $on -eq $rev ]
+    then
+        echo "Number is palindrome"
+    else
+        echo "Number is NOT palindrome"
+    fi
+}
+
+function menu {
+    echo -e "\t1. Odd Even"
+    echo -e "\t2. Palindrome"
+    echo -e "\t3. Prime"
+    echo -e "\t0. Exit Menu\n"
+    echo -n "Enter an Option: "
+    read -n 1 option
+}
+
+while true
+do
+    menu
+    echo
+    case $option in
+        0) break ;;
+        1) oddeven ;;
+        2) palindrome ;;
+        3) prime ;;
+        *)
+            clear
+            echo "Sorry, wrong selection"
+            ;;
+    esac
+    echo -en "\nHit any key to continue..."
+    read -n 1 line
+    clear
+done
+
