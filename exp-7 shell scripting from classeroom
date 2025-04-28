@@ -1,0 +1,285 @@
+search if an element exists in a list
+
+
+#!/bin/bash
+
+echo "Enter elements (space-separated):"
+read -a ele
+echo "Enter item to be searched:"
+read item
+
+flag=0
+for e in "${ele[@]}"
+do
+    if [ "$e" == "$item" ]
+    then
+        flag=1
+        break
+    fi
+done
+
+if [ $flag -eq 1 ]
+then
+    echo "Item found in the list."
+else
+    echo "Item not found in the list."
+fi
+
+
+
+
+
+
+
+compare 2 strings
+
+
+#!/bin/bash
+
+echo "Enter first string:"
+read a
+echo "Enter second string:"
+read b
+
+if [ "$a" = "$b" ]
+then
+    echo "Strings are equal"
+else
+    echo "Strings are not equal"
+fi
+
+
+
+
+
+
+employee pay calculation
+
+
+#!/bin/bash
+
+echo "Enter the basic salary:"
+read sal
+
+if [ $sal -lt 1500 ]
+then
+    gross=$((sal + (sal * 10 / 100) + (sal * 90 / 100)))
+    echo "The gross salary: $gross"
+else
+    gross=$((sal + 500 + (sal * 98 / 100)))
+    echo "The gross salary: $gross"
+fi
+
+
+
+
+
+
+grade calculation
+
+
+#!/bin/bash
+
+echo "Enter grade marks:"
+read grade
+
+if [ $grade -gt 90 ]
+then
+    echo "Grade O"
+elif [ $grade -gt 75 ]
+then
+    echo "Grade A"
+elif [ $grade -gt 60 ]
+then
+    echo "Grade B"
+elif [ $grade -gt 35 ]
+then
+    echo "Grade C"
+else
+    echo "Failed"
+fi
+
+
+
+
+
+check if the file exists, if not create it 
+
+
+#!/bin/bash
+
+echo "Enter the file name (without extension):"
+read file
+
+if [ -e "$file.txt" ]
+then
+    echo "File exists."
+else
+    echo "File does not exist. Creating file..."
+    cat > "$file.txt"
+    echo "File created successfully."
+fi
+
+
+
+
+
+
+calculator
+
+#!/bin/bash
+
+echo "1. Addition"
+echo "2. Subtraction"
+echo "3. Multiplication"
+echo "4. Division"
+echo -n "Enter your option: "
+read option
+
+echo "Enter two numbers:"
+read a b
+
+case $option in
+    1) c=$((a + b))
+       echo "$a + $b = $c" ;;
+    2) c=$((a - b))
+       echo "$a - $b = $c" ;;
+    3) c=$((a * b))
+       echo "$a * $b = $c" ;;
+    4) c=$((a / b))
+       echo "$a / $b = $c" ;;
+    *) echo "Invalid Option" ;;
+esac
+
+
+
+
+
+
+pattern
+
+#!/bin/bash
+
+echo "Enter number of rows:"
+read rows
+
+for ((i = 0; i < rows; i++))
+do
+    for ((j = i; j < rows; j++))
+    do
+        echo -n " "
+    done
+    for ((k = 0; k <= i; k++))
+    do
+        echo -n "* "
+    done
+    echo
+done
+
+
+
+
+
+
+directory operations
+
+#!/bin/bash
+
+echo "Current working directory:"
+pwd
+
+echo "Contents of current directory:"
+ls
+
+echo "Creating a new directory named 'New_Folder'"
+mkdir -p New_Folder
+ls
+
+cd New_Folder
+echo "Creating a file 'new_file.txt' in New_Folder"
+echo "This is sample content" > new_file.txt
+
+echo "Contents of new_file.txt:"
+cat new_file.txt
+
+echo "Copying 'new_file.txt' to home directory"
+cp new_file.txt ~/
+
+
+
+
+
+
+
+even/odd/prime/palindrome
+
+
+#!/bin/bash
+
+function prime {
+    echo -n "Enter a number: "
+    read a
+    i=2
+    while [ $i -lt $a ]
+    do
+        if [ $((a % i)) -eq 0 ]
+        then
+            echo "Not a Prime Number"
+            return
+        fi
+        i=$((i + 1))
+    done
+    echo "Prime Number"
+}
+
+function oddeven {
+    echo -n "Enter a number: "
+    read n
+    if [ $((n % 2)) -eq 0 ]
+    then
+        echo "Even number"
+    else
+        echo "Odd number"
+    fi
+}
+
+function palindrome {
+    echo -n "Enter a number: "
+    read n
+    original=$n
+    rev=0
+    while [ $n -gt 0 ]
+    do
+        digit=$((n % 10))
+        rev=$((rev * 10 + digit))
+        n=$((n / 10))
+    done
+    if [ $original -eq $rev ]
+    then
+        echo "Palindrome Number"
+    else
+        echo "Not a Palindrome"
+    fi
+}
+
+function menu {
+    echo -e "\n1. Even/Odd"
+    echo "2. Palindrome"
+    echo "3. Prime"
+    echo "0. Exit"
+    echo -n "Enter an option: "
+    read option
+}
+
+while true
+do
+    menu
+    case $option in
+        0) break ;;
+        1) oddeven ;;
+        2) palindrome ;;
+        3) prime ;;
+        *) echo "Invalid Option" ;;
+    esac
+done
+
